@@ -1,7 +1,8 @@
 import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
+import { errorHandler } from "../utils/error.js";
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
@@ -14,7 +15,7 @@ export const signup = async (req, res) => {
       email.trim() === "" ||
       password.trim() === ""
     ) {
-      return res.status(400).json({ message: "All fields are required" });
+      next(errorHandler(400, "all fields are required"));
     }
 
     // Additional validation can be added here, such as checking the validity of the email address, password strength, etc.
@@ -35,6 +36,6 @@ export const signup = async (req, res) => {
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     console.error("Error during user registration:", error);
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
